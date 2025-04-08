@@ -1,0 +1,20 @@
+# Ignore all .pkl files
+*.pkl
+
+# Ignore the faiss_index folder
+Dataset/
+
+# Ignore pycache in Loader
+Loader/__pycache__/
+
+# Ignore all pdf files 
+*.pdf
+
+.venv/
+
+*.zip
+
+# Ignore all cython
+*.pyc
+
+
