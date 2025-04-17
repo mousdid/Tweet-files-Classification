@@ -1,5 +1,7 @@
 import sys
 from cs585_P03_A20596524_EXTRA import loader, Classifier, Vectorizer, evaluate_metrics
+from joblib import dump, load
+import os
 
 def main():
 
@@ -17,33 +19,40 @@ def main():
     print("\nOusdid, Mohamed Yassir, A20596524 solution:")
     print(f"Training set size: {train_size}%")
     print("Classifier type:", "Naive Bayes" if algo == 0 else "Logistic Regression")
-
+    model_name = "nb" if algo == 0 else "lr"
+    filename   = f"classifier_{model_name}_{train_size}.joblib"
     TRAIN_SIZE = train_size / 100.0
     path = 'Dataset/'
     ld = loader(path)
     df = ld.load_data()
-    print(df.head(5))
-    print("----------------------------------")
     df = ld.preprocess_data()
-    print(df.head(5))
-    print("----------------------------------")
+
     train_df, test_df = ld.split_data(TRAIN_SIZE)
 
-    vectorizer = Vectorizer(train_df['text'])
-    X_train = vectorizer.transform_batch(train_df['text'])
-    y_train = list(train_df['male'])
-    X_test = vectorizer.transform_batch(test_df['text'])
-    y_test = list(test_df['male'])
 
-    clf = Classifier(algo, TRAIN_SIZE, train_df)
-    clf.vectorizer = vectorizer  
-    clf.train(X_train, y_train)
+    #to not rerun training
+    if os.path.exists(filename):
+        vectorizer,clf = load(filename)
+
+
+    else:   
+        vectorizer = Vectorizer(train_df['text'])
+        X_train = vectorizer.transform_batch(train_df['text'])
+        y_train = list(train_df['male'])
+        clf = Classifier(algo, TRAIN_SIZE, vocab=vectorizer.vocab)
+        print("\nTraining classifier...")
+        clf.train(X_train, y_train)
+        dump((vectorizer, clf), filename)
 
 
 
     print("\nTesting classifier...")
+    X_test = vectorizer.transform_batch(test_df['text'])
+    y_test = list(test_df['male'])
     y_pred = [clf.predict_vector(x)[0] for x in X_test]
     evaluate_metrics(y_test, y_pred)
+    
+
 
 
     while True:
@@ -65,3 +74,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#demo:
+#football is awesome
+#i like shopping 
+#makeup is life

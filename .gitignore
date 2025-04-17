@@ -1,8 +1,8 @@
-# Ignore all .pkl files
-*.pkl
 
-# Ignore the faiss_index folder
+
+# Ignore the folders
 Dataset/
+archive/
 
 # Ignore pycache in Loader
 Loader/__pycache__/
